@@ -1,53 +1,74 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { signIn } from "next-auth/react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export default function SignInPage() {
-  const router = useRouter();
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-    // TODO: validate credentials / call auth API
+    const email = e.target.email.value;
+    const password = e.target.password.value;
 
-    router.push("/"); // go to home/dashboard
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+
+    setLoading(false);
+
+    if (res?.error) {
+      setError("Invalid email or password");
+      return;
+    }
+
+    window.location.href = "/";
   }
 
   return (
-    <Card className="mx-auto max-w-sm">
-      <CardHeader>
-        <CardTitle>Sign In</CardTitle>
-      </CardHeader>
+    <div className="max-w-sm mx-auto mt-20 space-y-6">
+      <h1 className="text-2xl font-bold text-center">Sign In</h1>
 
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" required />
-          </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          name="email"
+          type="email"
+          placeholder="Email"
+          required
+          className="w-full border p-2 rounded"
+        />
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" required />
-          </div>
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          required
+          className="w-full border p-2 rounded"
+        />
 
-          <Button type="submit" className="w-full">
-            Sign In
-          </Button>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
-          <p className="text-sm text-muted-foreground text-center">
-            Don't have an account?{" "}
-            <Link href="/sign-up" className="text-primary hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </form>
-      </CardContent>
-    </Card>
+        <button
+          disabled={loading}
+          className="w-full bg-black text-white p-2 rounded"
+        >
+          {loading ? "Signing in..." : "Sign In"}
+        </button>
+      </form>
+
+      <p className="text-sm text-center">
+        Don’t have an account?{" "}
+        <Link href="/sign-up" className="underline">
+          Sign up
+        </Link>
+      </p>
+    </div>
   );
 }

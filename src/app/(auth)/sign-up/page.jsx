@@ -1,25 +1,43 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+"use client";
+
+import Link from "next/link";
 
 export default function SignUpPage() {
+  function handleSubmit(e) {
+    e.preventDefault();
+    window.location.href = "/sign-in";
+  }
+
   return (
-    <Card className="mx-auto max-w-sm">
-      <CardHeader>
-        <CardTitle>Create Account</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" />
-        </div>
-        <Button className="w-full">Sign Up</Button>
-      </CardContent>
-    </Card>
+    <div className="max-w-sm mx-auto mt-20 space-y-6">
+      <h1 className="text-2xl font-bold text-center">Sign Up</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="email"
+          placeholder="Email"
+          required
+          className="w-full border p-2 rounded"
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          required
+          className="w-full border p-2 rounded"
+        />
+
+        <button className="w-full bg-black text-white p-2 rounded">
+          Create Account
+        </button>
+      </form>
+
+      <p className="text-sm text-center">
+        Already have an account?{" "}
+        <Link href="/sign-in" className="underline">
+          Sign in
+        </Link>
+      </p>
+    </div>
   );
 }
